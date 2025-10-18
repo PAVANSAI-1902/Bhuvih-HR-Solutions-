@@ -1,0 +1,21 @@
+{
+  "name": "Bhuvih HR Solutions",
+  "short_name": "Bhuvih HR",
+  "description": "Dynamic HR solutions powered by AI technology, connecting the right talent with the right opportunities across India",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#FF9933",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "48x48",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ]
+}
