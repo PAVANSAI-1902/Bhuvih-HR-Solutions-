@@ -6,7 +6,7 @@
   html {
     scroll-behavior: smooth;
   }
-  
+
   body {
     @apply antialiased;
   }
@@ -79,7 +79,8 @@
   }
 
   @keyframes float {
-    0%, 100% {
+    0%,
+    100% {
       transform: translateY(0px);
     }
     50% {
@@ -88,7 +89,8 @@
   }
 
   @keyframes pulse-slow {
-    0%, 100% {
+    0%,
+    100% {
       opacity: 1;
     }
     50% {
@@ -106,7 +108,8 @@
   }
 
   @keyframes bounce-subtle {
-    0%, 100% {
+    0%,
+    100% {
       transform: translateY(0);
     }
     50% {
@@ -131,6 +134,117 @@
     100% {
       transform: scale(4);
       opacity: 0;
+    }
+  }
+
+  @keyframes perspective-spin {
+    0% {
+      transform: perspective(1000px) rotateY(0deg);
+    }
+    100% {
+      transform: perspective(1000px) rotateY(360deg);
+    }
+  }
+
+  @keyframes tilt-shaking {
+    0% {
+      transform: rotate(0deg);
+    }
+    25% {
+      transform: rotate(5deg);
+    }
+    50% {
+      transform: rotate(0deg);
+    }
+    75% {
+      transform: rotate(-5deg);
+    }
+    100% {
+      transform: rotate(0deg);
+    }
+  }
+
+  @keyframes slide-rotate {
+    0% {
+      transform: translateX(-100%) rotate(-180deg);
+      opacity: 0;
+    }
+    100% {
+      transform: translateX(0) rotate(0deg);
+      opacity: 1;
+    }
+  }
+
+  @keyframes float-3d {
+    0%,
+    100% {
+      transform: perspective(400px) translateY(0) rotateX(0deg);
+    }
+    50% {
+      transform: perspective(400px) translateY(-20px) rotateX(10deg);
+    }
+  }
+
+  @keyframes glow-pulse {
+    0%,
+    100% {
+      box-shadow: 0 0 20px rgba(249, 115, 22, 0.5);
+    }
+    50% {
+      box-shadow: 0 0 40px rgba(249, 115, 22, 0.8),
+        0 0 60px rgba(249, 115, 22, 0.6);
+    }
+  }
+
+  @keyframes scroll-fade-in {
+    from {
+      opacity: 0;
+      transform: perspective(600px) translateY(60px) rotateX(15deg);
+    }
+    to {
+      opacity: 1;
+      transform: perspective(600px) translateY(0) rotateX(0deg);
+    }
+  }
+
+  @keyframes levitate {
+    0%,
+    100% {
+      transform: translateY(0) scale(1);
+    }
+    50% {
+      transform: translateY(-15px) scale(1.02);
+    }
+  }
+
+  @keyframes card-flip {
+    0% {
+      transform: perspective(1000px) rotateY(0);
+    }
+    50% {
+      transform: perspective(1000px) rotateY(90deg);
+    }
+    100% {
+      transform: perspective(1000px) rotateY(0);
+    }
+  }
+
+  @keyframes text-shimmer {
+    0% {
+      background-position: -500%;
+    }
+    100% {
+      background-position: 500%;
+    }
+  }
+
+  @keyframes parallax-float {
+    0%,
+    100% {
+      transform: translate3d(0, 0, 0);
+    }
+    50% {
+      transform: translate3d(0, -30px, 50px);
     }
   }
 
@@ -168,7 +282,13 @@
 
   .animate-shimmer {
     animation: shimmer 2s infinite linear;
-    background: linear-gradient(to right, #f3f4f6 0%, #e5e7eb 20%, #f3f4f6 40%, #f3f4f6 100%);
+    background: linear-gradient(
+      to right,
+      #f3f4f6 0%,
+      #e5e7eb 20%,
+      #f3f4f6 40%,
+      #f3f4f6 100%
+    );
     background-size: 1000px 100%;
   }
 
@@ -178,6 +298,58 @@
 
   .animate-rotate-slow {
     animation: rotate-slow 20s linear infinite;
+  }
+
+  .animate-perspective-spin {
+    animation: perspective-spin 10s linear infinite;
+  }
+
+  .animate-tilt-shaking {
+    animation: tilt-shaking 0.5s ease-in-out;
+  }
+
+  .animate-slide-rotate {
+    animation: slide-rotate 1s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  }
+
+  .animate-float-3d {
+    animation: float-3d 4s ease-in-out infinite;
+  }
+
+  .animate-glow-pulse {
+    animation: glow-pulse 2s ease-in-out infinite;
+  }
+
+  .animate-scroll-fade-in {
+    animation: scroll-fade-in 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .animate-levitate {
+    animation: levitate 3s ease-in-out infinite;
+  }
+
+  .animate-card-flip {
+    animation: card-flip 1.5s ease-in-out;
+  }
+
+  .animate-text-shimmer {
+    background: linear-gradient(
+      90deg,
+      #f97316 0%,
+      #facc15 25%,
+      #f97316 50%,
+      #facc15 75%,
+      #f97316 100%
+    );
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: text-shimmer 3s linear infinite;
+  }
+
+  .animate-parallax-float {
+    animation: parallax-float 6s ease-in-out infinite;
   }
 
   /* Gradient text */
@@ -204,7 +376,7 @@
   }
 
   .ripple-effect::after {
-    content: '';
+    content: "";
     position: absolute;
     top: 50%;
     left: 50%;
@@ -236,6 +408,315 @@
   /* Parallax */
   .parallax {
     transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  /* 3D Card Effect */
+  .card-3d {
+    transform-style: preserve-3d;
+    transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+  }
+
+  .card-3d:hover {
+    transform: perspective(1000px) rotateX(5deg) rotateY(5deg) translateZ(20px);
+  }
+
+  /* Depth Shadow */
+  .depth-shadow {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24),
+      0 10px 40px rgba(0, 0, 0, 0.1);
+  }
+
+  .depth-shadow:hover {
+    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.15), 0 10px 10px rgba(0, 0, 0, 0.12),
+      0 20px 60px rgba(249, 115, 22, 0.2);
+  }
+
+  /* Magnetic Effect */
+  .magnetic {
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  /* Smooth 3D Perspective */
+  .perspective-container {
+    perspective: 1500px;
+    perspective-origin: center;
+  }
+
+  /* Layered Parallax */
+  .parallax-layer {
+    transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    will-change: transform;
+  }
+
+  /* Text Gradient Animation */
+  .text-gradient-animate {
+    background: linear-gradient(
+      45deg,
+      #f97316,
+      #fb923c,
+      #fbbf24,
+      #fb923c,
+      #f97316
+    );
+    background-size: 300% 300%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: gradient-shift 4s ease infinite;
+  }
+
+  @keyframes gradient-shift {
+    0%,
+    100% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+  }
+
+  /* Morphing Border */
+  .morphing-border {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .morphing-border::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 2px;
+    background: linear-gradient(
+      45deg,
+      #f97316,
+      #fb923c,
+      #fbbf24,
+      #fb923c,
+      #f97316
+    );
+    background-size: 300% 300%;
+    -webkit-mask: linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    animation: gradient-shift 4s ease infinite;
+  }
+
+  /* Image Zoom on Scroll */
+  .zoom-on-scroll {
+    transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .zoom-on-scroll.zoomed {
+    transform: scale(1.1);
+  }
+
+  /* Stagger Animation Delay Utilities */
+  .stagger-1 {
+    animation-delay: 0.1s;
+  }
+  .stagger-2 {
+    animation-delay: 0.2s;
+  }
+  .stagger-3 {
+    animation-delay: 0.3s;
+  }
+  .stagger-4 {
+    animation-delay: 0.4s;
+  }
+  .stagger-5 {
+    animation-delay: 0.5s;
+  }
+
+  /* Additional Animations */
+  @keyframes pulse-glow {
+    0%,
+    100% {
+      box-shadow: 0 0 20px rgba(249, 115, 22, 0.4);
+    }
+    50% {
+      box-shadow: 0 0 40px rgba(249, 115, 22, 0.8),
+        0 0 60px rgba(249, 115, 22, 0.4);
+    }
+  }
+
+  .animate-pulse-glow {
+    animation: pulse-glow 2s ease-in-out infinite;
+  }
+
+  @keyframes wiggle {
+    0%,
+    100% {
+      transform: rotate(-3deg);
+    }
+    50% {
+      transform: rotate(3deg);
+    }
+  }
+
+  .animate-wiggle {
+    animation: wiggle 1s ease-in-out infinite;
+  }
+
+  @keyframes slideUpFade {
+    from {
+      opacity: 0;
+      transform: translateY(40px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-slideUpFade {
+    animation: slideUpFade 0.8s ease-out forwards;
+  }
+
+  @keyframes heartbeat {
+    0%,
+    100% {
+      transform: scale(1);
+    }
+    10%,
+    30% {
+      transform: scale(0.9);
+    }
+    20%,
+    40% {
+      transform: scale(1.1);
+    }
+  }
+
+  .animate-heartbeat {
+    animation: heartbeat 1.5s ease-in-out infinite;
+  }
+
+  @keyframes tada {
+    0% {
+      transform: scale(1) rotate(0deg);
+    }
+    10%,
+    20% {
+      transform: scale(0.9) rotate(-3deg);
+    }
+    30%,
+    50%,
+    70%,
+    90% {
+      transform: scale(1.1) rotate(3deg);
+    }
+    40%,
+    60%,
+    80% {
+      transform: scale(1.1) rotate(-3deg);
+    }
+    100% {
+      transform: scale(1) rotate(0deg);
+    }
+  }
+
+  .animate-tada {
+    animation: tada 1s ease-in-out;
+  }
+
+  .hover-lift {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .hover-lift:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+  }
+
+  .neon-glow {
+    text-shadow: 0 0 10px rgba(249, 115, 22, 0.8),
+      0 0 20px rgba(249, 115, 22, 0.6), 0 0 30px rgba(249, 115, 22, 0.4),
+      0 0 40px rgba(249, 115, 22, 0.2);
+  }
+
+  /* Additional 3D animations */
+  @keyframes depth-float {
+    0%,
+    100% {
+      transform: perspective(1000px) translateZ(0px) translateY(0px);
+    }
+    50% {
+      transform: perspective(1000px) translateZ(50px) translateY(-20px);
+    }
+  }
+
+  .animate-depth-float {
+    animation: depth-float 4s ease-in-out infinite;
+  }
+
+  @keyframes rotate-3d {
+    0% {
+      transform: perspective(1000px) rotateY(0deg) rotateX(0deg);
+    }
+    25% {
+      transform: perspective(1000px) rotateY(5deg) rotateX(5deg);
+    }
+    50% {
+      transform: perspective(1000px) rotateY(0deg) rotateX(10deg);
+    }
+    75% {
+      transform: perspective(1000px) rotateY(-5deg) rotateX(5deg);
+    }
+    100% {
+      transform: perspective(1000px) rotateY(0deg) rotateX(0deg);
+    }
+  }
+
+  .animate-rotate-3d {
+    animation: rotate-3d 8s ease-in-out infinite;
+  }
+
+  @keyframes slide-3d {
+    0%,
+    100% {
+      transform: perspective(1000px) translateX(0) rotateY(0deg);
+    }
+    50% {
+      transform: perspective(1000px) translateX(20px) rotateY(10deg);
+    }
+  }
+
+  .animate-slide-3d {
+    animation: slide-3d 5s ease-in-out infinite;
+  }
+
+  @keyframes flip-3d {
+    0% {
+      transform: perspective(1200px) rotateX(0deg);
+    }
+    50% {
+      transform: perspective(1200px) rotateX(180deg);
+    }
+    100% {
+      transform: perspective(1200px) rotateX(360deg);
+    }
+  }
+
+  .animate-flip-3d {
+    animation: flip-3d 10s ease-in-out infinite;
+  }
+
+  @keyframes bounce-3d {
+    0%,
+    100% {
+      transform: perspective(1000px) translateY(0) translateZ(0) rotateX(0deg);
+    }
+    50% {
+      transform: perspective(1000px) translateY(-30px) translateZ(30px)
+        rotateX(10deg);
+    }
+  }
+
+  .animate-bounce-3d {
+    animation: bounce-3d 2s ease-in-out infinite;
   }
 }
 
