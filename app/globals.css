@@ -720,6 +720,229 @@
   }
 }
 
+/* Responsive helpers */
+/* Make images and videos scale within their container */
+img,
+video {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Prevent elements from causing horizontal scroll */
+* {
+  box-sizing: border-box;
+}
+
+/* Ensure long text wraps */
+.break-word {
+  word-wrap: break-word;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+/* Modal and large containers should respect viewport on small screens */
+.modal-fullscreen {
+  max-width: calc(100vw - 32px);
+  max-height: calc(100vh - 32px);
+  margin: 16px;
+}
+
+/* Make videos in hero scale and keep aspect ratio */
+.video-responsive {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16/9;
+  max-height: 80vh;
+  object-fit: cover;
+}
+
+/* Utility to reduce heavy perspective on small screens */
+@media (max-width: 640px) {
+  .perspective-container {
+    perspective: 800px;
+  }
+  .card-3d:hover {
+    transform: none;
+  }
+  .perspective-container,
+  .perspective-container * {
+    transform: none !important;
+  }
+
+  /* Reduce animation complexity on mobile */
+  .animate-float-3d,
+  .animate-parallax-float,
+  .animate-depth-float {
+    animation: none !important;
+  }
+
+  /* Adjust text sizes for readability */
+  h1,
+  .h1 {
+    font-size: clamp(1.5rem, 5vw, 2.5rem);
+    line-height: 1.2;
+  }
+
+  h2,
+  .h2 {
+    font-size: clamp(1.25rem, 4vw, 2rem);
+    line-height: 1.3;
+  }
+
+  p,
+  .body-text {
+    font-size: clamp(0.875rem, 3vw, 1rem);
+    line-height: 1.6;
+  }
+
+  /* Improve touch targets */
+  button,
+  .button,
+  a {
+    min-height: 44px;
+    padding: 0.5rem 1rem;
+  }
+
+  /* Stack grid items on mobile */
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  /* Adjust spacing */
+  .section {
+    padding: clamp(2rem, 5vw, 4rem) 0;
+  }
+
+  .container {
+    padding-left: clamp(1rem, 5vw, 2rem);
+    padding-right: clamp(1rem, 5vw, 2rem);
+  }
+}
+
+/* Tablet specific adjustments */
+@media (min-width: 641px) and (max-width: 1024px) {
+  .grid {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  }
+
+  .section {
+    padding: clamp(3rem, 6vw, 5rem) 0;
+  }
+
+  /* Moderate animations for better performance */
+  .animate-parallax-float {
+    animation: float 3s ease-in-out infinite;
+  }
+}
+
+/* Larger screens */
+@media (min-width: 1025px) {
+  .container {
+    max-width: 1280px;
+    margin: 0 auto;
+  }
+
+  .section {
+    padding: clamp(4rem, 8vw, 6rem) 0;
+  }
+}
+
+/* Landscape phone optimization */
+@media (max-height: 480px) and (orientation: landscape) {
+  .hero-section {
+    min-height: auto;
+    padding: 2rem 0;
+  }
+
+  .modal-content {
+    max-height: 80vh;
+  }
+}
+
+/* Legal Modal Specific Styles - NO ANIMATIONS */
+.legal-modal-backdrop {
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+.legal-modal-container {
+  will-change: auto;
+  overscroll-behavior: contain;
+  transform: none !important;
+}
+
+.legal-modal-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: linear-gradient(to right, #fff7ed, #fef2f2);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+.legal-modal-content {
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+  will-change: auto;
+}
+
+/* Optimize modal content rendering */
+.legal-modal-content * {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Prevent text selection issues during scroll */
+.legal-modal-content {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+/* Smooth scrollbar for modal */
+.legal-modal-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.legal-modal-content::-webkit-scrollbar-track {
+  background: #f3f4f6;
+  border-radius: 4px;
+}
+
+.legal-modal-content::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #f97316, #ea580c);
+  border-radius: 4px;
+}
+
+.legal-modal-content::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #ea580c, #c2410c);
+}
+
+/* Prevent layout shift on mobile */
+@media (max-width: 640px) {
+  .legal-modal-container {
+    max-height: 85vh !important;
+  }
+
+  .legal-modal-header {
+    padding: 1rem;
+  }
+
+  .legal-modal-content {
+    padding: 1rem;
+  }
+}
+
+/* Fix iOS bounce scrolling issues */
+@supports (-webkit-touch-callout: none) {
+  .legal-modal-content {
+    -webkit-overflow-scrolling: auto;
+    overflow-y: scroll;
+  }
+}
+
 /* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 10px;

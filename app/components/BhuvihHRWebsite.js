@@ -34,6 +34,8 @@ export default function BhuvihHRWebsite() {
 
   useEffect(() => {
     const handleScroll = () => {
+      if (activeModal) return;
+
       setIsScrolled(window.scrollY > 20);
       setShowBackToTop(window.scrollY > 500);
 
@@ -193,7 +195,7 @@ export default function BhuvihHRWebsite() {
       window.removeEventListener("scroll", optimizedScroll);
       window.removeEventListener("mousemove", handleMouseMove);
     };
-  }, []);
+  }, [activeModal]);
 
   // Testimonial auto-rotate
   useEffect(() => {
@@ -373,24 +375,152 @@ export default function BhuvihHRWebsite() {
     },
   ];
 
+  // Add useEffect for modal scroll management
+  useEffect(() => {
+    if (activeModal) {
+      // Store original body styles
+      const originalStyle = window.getComputedStyle(document.body).overflow;
+      const originalPosition = window.getComputedStyle(document.body).position;
+      const scrollY = window.scrollY;
+
+      // Prevent body scroll
+      document.body.style.overflow = "hidden";
+      document.body.style.position = "fixed";
+      document.body.style.top = `-${scrollY}px`;
+      document.body.style.width = "100%";
+
+      return () => {
+        // Restore body scroll
+        document.body.style.overflow = originalStyle;
+        document.body.style.position = originalPosition;
+        document.body.style.top = "";
+        document.body.style.width = "";
+        window.scrollTo(0, scrollY);
+      };
+    }
+  }, [activeModal]);
+
   const LegalModal = ({ isOpen, onClose, title, content }) => {
+    const modalRef = useRef(null);
+    const contentRef = useRef(null);
+
+    useEffect(() => {
+      const handleEscape = (e) => {
+        if (e.key === "Escape") {
+          onClose();
+        }
+      };
+
+      if (isOpen) {
+        window.addEventListener("keydown", handleEscape);
+        if (contentRef.current) {
+          contentRef.current.scrollTop = 0;
+        }
+      }
+
+      return () => {
+        window.removeEventListener("keydown", handleEscape);
+      };
+    }, [isOpen, onClose]);
+
     if (!isOpen) return null;
 
+    const handleBackdropClick = (e) => {
+      if (e.target.classList.contains("legal-modal-backdrop")) {
+        onClose();
+      }
+    };
+
+    const handleWheelEvent = (e) => {
+      e.stopPropagation();
+    };
+
     return (
-      <div className="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fadeIn">
-        <div className="bg-white rounded-2xl max-w-4xl max-h-[90vh] overflow-hidden w-full shadow-2xl animate-scaleIn">
-          <div className="flex justify-between items-center p-6 border-b border-gray-200 bg-gradient-to-r from-orange-50 to-red-50">
-            <h2 className="text-2xl font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">
+      <div
+        className="legal-modal-backdrop fixed inset-0 z-[9999]"
+        onClick={handleBackdropClick}
+        style={{
+          backgroundColor: "rgba(0, 0, 0, 0.6)",
+          backdropFilter: "blur(4px)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          padding: "1rem",
+        }}
+      >
+        <div
+          ref={modalRef}
+          className="legal-modal-container bg-white rounded-2xl shadow-2xl"
+          style={{
+            width: "100%",
+            maxWidth: "56rem",
+            height: "90vh",
+            maxHeight: "90vh",
+            display: "flex",
+            flexDirection: "column",
+            overflow: "hidden",
+          }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          {/* Fixed Header */}
+          <div
+            className="legal-modal-header border-b border-gray-200"
+            style={{
+              padding: "1rem 1.5rem",
+              background: "linear-gradient(to right, #fff7ed, #fef2f2)",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              flexShrink: 0,
+            }}
+          >
+            <h2
+              className="text-xl sm:text-2xl font-bold"
+              style={{
+                background: "linear-gradient(to right, #ea580c, #dc2626)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                backgroundClip: "text",
+              }}
+            >
               {title}
             </h2>
             <button
               onClick={onClose}
-              className="text-gray-500 hover:text-red-600 text-3xl font-light transition-all duration-200 hover:rotate-90 transform"
+              className="text-gray-500 hover:text-red-600 flex-shrink-0"
+              style={{
+                fontSize: "2rem",
+                fontWeight: 300,
+                width: "2.5rem",
+                height: "2.5rem",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                border: "none",
+                background: "none",
+                cursor: "pointer",
+                transition: "color 0.2s",
+              }}
+              aria-label="Close modal"
             >
               ×
             </button>
           </div>
-          <div className="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
+
+          {/* Scrollable Content */}
+          <div
+            ref={contentRef}
+            className="legal-modal-content"
+            onWheel={(e) => e.stopPropagation()}
+            style={{
+              padding: "1.5rem",
+              overflowY: "auto",
+              overflowX: "hidden",
+              flex: "1 1 auto",
+              minHeight: 0,
+              WebkitOverflowScrolling: "touch",
+            }}
+          >
             <div className="prose prose-sm max-w-none">{content}</div>
           </div>
         </div>
@@ -655,12 +785,9 @@ export default function BhuvihHRWebsite() {
       <section id="about" className="py-12 sm:py-16 lg:py-28 relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center">
-            <div
-              className="relative rounded-3xl overflow-hidden shadow-2xl border border-orange-200 lg:order-1 lg:mr-auto scroll-reveal depth-shadow zoom-on-scroll parallax-element"
-              data-speed="0.3"
-            >
+            <div className="relative rounded-3xl overflow-hidden shadow-2xl border border-orange-200 lg:order-1 lg:mr-auto">
               <video
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover aspect-video"
                 src="/videos/group.mp4"
                 autoPlay
                 muted
@@ -758,7 +885,10 @@ export default function BhuvihHRWebsite() {
                   Intelligent job matching, ATS, resume parsing, and interview
                   tools powered by advanced AI algorithms.
                 </p>
-                <div className="mt-4 sm:mt-6 flex items-center text-orange-600 text-sm sm:text-base font-semibold opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <button
+                  onClick={() => openModal("koluvu")}
+                  className="mt-4 sm:mt-6 flex items-center text-orange-600 text-sm sm:text-base font-semibold opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                >
                   Learn More
                   <svg
                     className="w-4 h-4 sm:w-5 sm:h-5 ml-2 group-hover:translate-x-2 transition-transform duration-300"
@@ -773,7 +903,7 @@ export default function BhuvihHRWebsite() {
                       d="M17 8l4 4m0 0l-4 4m4-4H3"
                     />
                   </svg>
-                </div>
+                </button>
               </div>
             </div>
 
@@ -793,7 +923,10 @@ export default function BhuvihHRWebsite() {
                   A comprehensive cloud-based HR management system streamlining
                   payroll, appraisals, and employee data.
                 </p>
-                <div className="mt-4 sm:mt-6 flex items-center text-green-600 text-sm sm:text-base font-semibold opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <button
+                  onClick={() => openModal("leko")}
+                  className="mt-4 sm:mt-6 flex items-center text-green-600 text-sm sm:text-base font-semibold opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                >
                   Learn More
                   <svg
                     className="w-4 h-4 sm:w-5 sm:h-5 ml-2 group-hover:translate-x-2 transition-transform duration-300"
@@ -808,7 +941,7 @@ export default function BhuvihHRWebsite() {
                       d="M17 8l4 4m0 0l-4 4m4-4H3"
                     />
                   </svg>
-                </div>
+                </button>
               </div>
             </div>
 
@@ -828,7 +961,10 @@ export default function BhuvihHRWebsite() {
                   Collaborative platform connecting clients, talent, and
                   recruiters with unified communication and analytics.
                 </p>
-                <div className="mt-4 sm:mt-6 flex items-center text-teal-600 text-sm sm:text-base font-semibold opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <button
+                  onClick={() => openModal("kolink")}
+                  className="mt-4 sm:mt-6 flex items-center text-teal-600 text-sm sm:text-base font-semibold opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                >
                   Learn More
                   <svg
                     className="w-4 h-4 sm:w-5 sm:h-5 ml-2 group-hover:translate-x-2 transition-transform duration-300"
@@ -843,7 +979,7 @@ export default function BhuvihHRWebsite() {
                       d="M17 8l4 4m0 0l-4 4m4-4H3"
                     />
                   </svg>
-                </div>
+                </button>
               </div>
             </div>
 
@@ -863,7 +999,10 @@ export default function BhuvihHRWebsite() {
                   Employment centers connecting rural and urban job seekers to
                   verified opportunities nationwide.
                 </p>
-                <div className="mt-4 sm:mt-6 flex items-center text-purple-600 text-sm sm:text-base font-semibold opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <button
+                  onClick={() => openModal("koluvuKendralaya")}
+                  className="mt-4 sm:mt-6 flex items-center text-purple-600 text-sm sm:text-base font-semibold opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                >
                   Learn More
                   <svg
                     className="w-4 h-4 sm:w-5 sm:h-5 ml-2 group-hover:translate-x-2 transition-transform duration-300"
@@ -878,7 +1017,7 @@ export default function BhuvihHRWebsite() {
                       d="M17 8l4 4m0 0l-4 4m4-4H3"
                     />
                   </svg>
-                </div>
+                </button>
               </div>
             </div>
 
@@ -898,7 +1037,10 @@ export default function BhuvihHRWebsite() {
                   Comprehensive HR training & certification programs for
                   professionals and freshers.
                 </p>
-                <div className="mt-4 sm:mt-6 flex items-center text-blue-600 text-sm sm:text-base font-semibold opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <button
+                  onClick={() => openModal("schoolHr")}
+                  className="mt-4 sm:mt-6 flex items-center text-blue-600 text-sm sm:text-base font-semibold opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                >
                   Learn More
                   <svg
                     className="w-4 h-4 sm:w-5 sm:h-5 ml-2 group-hover:translate-x-2 transition-transform duration-300"
@@ -913,15 +1055,15 @@ export default function BhuvihHRWebsite() {
                       d="M17 8l4 4m0 0l-4 4m4-4H3"
                     />
                   </svg>
-                </div>
+                </button>
               </div>
             </div>
 
             {/* Koluvu Immigrations */}
-            <div className="group relative bg-white p-6 sm:p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-3 border border-red-100 overflow-hidden sm:col-span-2 lg:col-span-1 scroll-fade-slide mouse-parallax stagger-6">
+            <div className="group relative bg-white p-6 sm:p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-3 border border-red-100 overflow-hidden sm:col-span-2 lg:col-span-1">
               <div className="absolute top-0 right-0 w-24 sm:w-32 h-24 sm:h-32 bg-gradient-to-br from-red-400 to-rose-400 rounded-full filter blur-2xl opacity-0 group-hover:opacity-20 transition-opacity duration-500 -mr-12 sm:-mr-16 -mt-12 sm:-mt-16"></div>
               <div className="relative z-10">
-                <div className="w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-red-500 to-rose-500 rounded-2xl flex items-center justify-center mb-4 sm:mb-6 shadow-lg group-hover:scale-110 group-hover:rotate-12 transition-all duration-500 animate-tada">
+                <div className="w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-red-500 to-rose-500 rounded-2xl flex items-center justify-center mb-4 sm:mb-6 shadow-lg group-hover:scale-110 group-hover:rotate-12 transition-all duration-500">
                   <span className="text-white font-bold text-xl sm:text-2xl">
                     KI
                   </span>
@@ -933,7 +1075,10 @@ export default function BhuvihHRWebsite() {
                   Expert assistance with study and work opportunities abroad,
                   making global dreams achievable.
                 </p>
-                <div className="mt-4 sm:mt-6 flex items-center text-red-600 text-sm sm:text-base font-semibold opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <button
+                  onClick={() => openModal("koluvuImmigrations")}
+                  className="mt-4 sm:mt-6 flex items-center text-red-600 text-sm sm:text-base font-semibold opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                >
                   Learn More
                   <svg
                     className="w-4 h-4 sm:w-5 sm:h-5 ml-2 group-hover:translate-x-2 transition-transform duration-300"
@@ -948,7 +1093,7 @@ export default function BhuvihHRWebsite() {
                       d="M17 8l4 4m0 0l-4 4m4-4H3"
                     />
                   </svg>
-                </div>
+                </button>
               </div>
             </div>
           </div>
@@ -1284,8 +1429,8 @@ export default function BhuvihHRWebsite() {
             </div>
 
             {/* Job Fairs */}
-            <div className="group bg-white p-6 sm:p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 border-t-4 border-purple-500 cursor-pointer scroll-reveal scroll-fade-slide mouse-parallax stagger-3">
-              <div className="w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-purple-100 to-pink-100 rounded-2xl flex items-center justify-center mb-4 sm:mb-6 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 animate-bounce-3d">
+            <div className="group bg-white p-6 sm:p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 border-t-4 border-purple-500 cursor-pointer scroll-reveal stagger-3">
+              <div className="w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-purple-100 to-pink-100 rounded-2xl flex items-center justify-center mb-4 sm:mb-6 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300">
                 <svg
                   className="w-6 h-6 sm:w-8 sm:h-8 text-purple-600"
                   fill="none"
@@ -1796,14 +1941,14 @@ export default function BhuvihHRWebsite() {
               </div>
             </div>
 
-            <div className="lg:pl-4">
+                        <div className="lg:pl-4">
               <h3 className="font-bold mb-4 sm:mb-6 text-lg sm:text-xl bg-gradient-to-r from-white via-green-100 to-white bg-clip-text text-transparent">
                 Legal Documents
               </h3>
               <ul className="space-y-3 sm:space-y-4 text-white/80 text-xs sm:text-sm">
                 <li>
-                  <button
-                    onClick={() => openModal("privacy")}
+                  <a
+                    href="/privacy-policy"
                     className="group flex items-center hover:text-white transition-all duration-300 cursor-pointer text-left"
                   >
                     <svg
@@ -1820,11 +1965,11 @@ export default function BhuvihHRWebsite() {
                       />
                     </svg>
                     Privacy Policy
-                  </button>
+                  </a>
                 </li>
                 <li>
-                  <button
-                    onClick={() => openModal("terms")}
+                  <a
+                    href="/terms-conditions"
                     className="group flex items-center hover:text-white transition-all duration-300 cursor-pointer text-left"
                   >
                     <svg
@@ -1841,11 +1986,11 @@ export default function BhuvihHRWebsite() {
                       />
                     </svg>
                     Terms & Conditions
-                  </button>
+                  </a>
                 </li>
                 <li>
-                  <button
-                    onClick={() => openModal("disclaimer")}
+                  <a
+                    href="/disclaimer"
                     className="group flex items-center hover:text-white transition-all duration-300 cursor-pointer text-left"
                   >
                     <svg
@@ -1862,11 +2007,11 @@ export default function BhuvihHRWebsite() {
                       />
                     </svg>
                     Disclaimer
-                  </button>
+                  </a>
                 </li>
                 <li>
-                  <button
-                    onClick={() => openModal("nda")}
+                  <a
+                    href="/non-disclosure-agreement"
                     className="group flex items-center hover:text-white transition-all duration-300 cursor-pointer text-left"
                   >
                     <svg
@@ -1883,7 +2028,7 @@ export default function BhuvihHRWebsite() {
                       />
                     </svg>
                     Non-Disclosure Agreement
-                  </button>
+                  </a>
                 </li>
               </ul>
             </div>
@@ -1931,9 +2076,11 @@ export default function BhuvihHRWebsite() {
                 </li>
                 <li className="group cursor-pointer">
                   <span className="font-semibold text-white group-hover:text-green-200 transition-colors duration-300">
-                    Koluvu Technology
+                    Kolink - Talent Engagement Suite
                   </span>
-                  <div className="text-sm text-white/70">Tech Solutions</div>
+                  <div className="text-sm text-white/70">
+                    Connecting Talent, Clients & Recruiters
+                  </div>
                 </li>
                 <li className="group cursor-pointer">
                   <span className="font-semibold text-white group-hover:text-green-200 transition-colors duration-300">
@@ -1969,6 +2116,138 @@ export default function BhuvihHRWebsite() {
           </div>
         </div>
       </footer>
+
+      {/* Business Service Modals */}
+      <LegalModal
+        isOpen={activeModal === "koluvu"}
+        onClose={closeModal}
+        title="Koluvu - AI-Powered Job Portal"
+        content={
+          <div className="space-y-4">
+            <p>
+              Koluvu is our cutting-edge AI-powered job matching platform that
+              revolutionizes the recruitment process:
+            </p>
+            <ul className="list-disc pl-5 space-y-2">
+              <li>Advanced AI-driven job matching algorithms</li>
+              <li>Smart resume parsing and candidate screening</li>
+              <li>Automated interview scheduling and tracking</li>
+              <li>Real-time analytics and reporting</li>
+              <li>Mobile-friendly interface for job seekers</li>
+              <li>Integrated ATS (Applicant Tracking System)</li>
+            </ul>
+          </div>
+        }
+      />
+
+      <LegalModal
+        isOpen={activeModal === "leko"}
+        onClose={closeModal}
+        title="LEKO - HRMS"
+        content={
+          <div className="space-y-4">
+            <p>
+              LEKO is our comprehensive HR Management System designed to
+              streamline HR operations:
+            </p>
+            <ul className="list-disc pl-5 space-y-2">
+              <li>Employee data management and organization</li>
+              <li>Payroll processing and management</li>
+              <li>Performance appraisal tracking</li>
+              <li>Leave and attendance management</li>
+              <li>Training and development tracking</li>
+              <li>Document management system</li>
+            </ul>
+          </div>
+        }
+      />
+
+      <LegalModal
+        isOpen={activeModal === "kolink"}
+        onClose={closeModal}
+        title="Kolink - Talent Engagement Suite"
+        content={
+          <div className="space-y-4">
+            <p>
+              Kolink is our innovative talent engagement platform that connects
+              all stakeholders:
+            </p>
+            <ul className="list-disc pl-5 space-y-2">
+              <li>Unified communication platform</li>
+              <li>Real-time collaboration tools</li>
+              <li>Analytics and reporting dashboard</li>
+              <li>Candidate engagement tracking</li>
+              <li>Client relationship management</li>
+              <li>Recruiter performance analytics</li>
+            </ul>
+          </div>
+        }
+      />
+
+      <LegalModal
+        isOpen={activeModal === "koluvuKendralaya"}
+        onClose={closeModal}
+        title="Koluvu Kendralaya"
+        content={
+          <div className="space-y-4">
+            <p>
+              Koluvu Kendralaya brings employment opportunities to rural and
+              urban areas:
+            </p>
+            <ul className="list-disc pl-5 space-y-2">
+              <li>Physical employment centers across India</li>
+              <li>Job search assistance and guidance</li>
+              <li>Skill assessment and development</li>
+              <li>Local employer partnerships</li>
+              <li>Career counseling services</li>
+              <li>Resume building workshops</li>
+            </ul>
+          </div>
+        }
+      />
+
+      <LegalModal
+        isOpen={activeModal === "schoolHr"}
+        onClose={closeModal}
+        title="School of HR Excellence"
+        content={
+          <div className="space-y-4">
+            <p>
+              Our School of HR Excellence offers comprehensive training and
+              certification programs:
+            </p>
+            <ul className="list-disc pl-5 space-y-2">
+              <li>Professional HR certification courses</li>
+              <li>Industry-expert led training</li>
+              <li>Practical case studies and workshops</li>
+              <li>Placement assistance</li>
+              <li>Continuous learning programs</li>
+              <li>Latest HR technology training</li>
+            </ul>
+          </div>
+        }
+      />
+
+      <LegalModal
+        isOpen={activeModal === "koluvuImmigrations"}
+        onClose={closeModal}
+        title="Koluvu Immigrations"
+        content={
+          <div className="space-y-4">
+            <p>
+              Koluvu Immigrations helps individuals achieve their global dreams:
+            </p>
+            <ul className="list-disc pl-5 space-y-2">
+              <li>Study abroad counseling</li>
+              <li>Work visa assistance</li>
+              <li>Documentation support</li>
+              <li>University and course selection</li>
+              <li>Pre-departure guidance</li>
+              <li>Post-landing support services</li>
+            </ul>
+          </div>
+        }
+      />
 
       {/* Legal Document Modals */}
       <LegalModal
