@@ -378,24 +378,26 @@ export default function BhuvihHRWebsite() {
   // Add useEffect for modal scroll management
   useEffect(() => {
     if (activeModal) {
-      // Store original body styles
-      const originalStyle = window.getComputedStyle(document.body).overflow;
-      const originalPosition = window.getComputedStyle(document.body).position;
-      const scrollY = window.scrollY;
+      // Store original inline styles so we can restore them
+      const originalOverflow = document.body.style.overflow;
+      const originalPaddingRight = document.body.style.paddingRight;
 
-      // Prevent body scroll
+      // Prevent background scrolling by hiding overflow only.
+      // Avoid setting `position: fixed` and `top` because it changes
+      // layout and can cause the observed auto-scroll/jump behavior
+      // for scrollable modal containers.
       document.body.style.overflow = "hidden";
-      document.body.style.position = "fixed";
-      document.body.style.top = `-${scrollY}px`;
-      document.body.style.width = "100%";
+
+      // Compensate for missing scrollbar (prevent layout shift) when needed
+      const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+      if (scrollbarWidth > 0) {
+        document.body.style.paddingRight = `${scrollbarWidth}px`;
+      }
 
       return () => {
-        // Restore body scroll
-        document.body.style.overflow = originalStyle;
-        document.body.style.position = originalPosition;
-        document.body.style.top = "";
-        document.body.style.width = "";
-        window.scrollTo(0, scrollY);
+        // Restore inline styles
+        document.body.style.overflow = originalOverflow;
+        document.body.style.paddingRight = originalPaddingRight;
       };
     }
   }, [activeModal]);
@@ -2030,6 +2032,48 @@ export default function BhuvihHRWebsite() {
                     Non-Disclosure Agreement
                   </a>
                 </li>
+                <li>
+                  <a
+                    href="/shipping-policy"
+                    className="group flex items-center hover:text-white transition-all duration-300 cursor-pointer text-left"
+                  >
+                    <svg
+                      className="w-3 h-3 sm:w-4 sm:h-4 mr-2 text-white group-hover:translate-x-1 transition-transform duration-300 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 5l7 7-7 7"
+                      />
+                    </svg>
+                    Shipping Policy
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="/cancellation-policy"
+                    className="group flex items-center hover:text-white transition-all duration-300 cursor-pointer text-left"
+                  >
+                    <svg
+                      className="w-3 h-3 sm:w-4 sm:h-4 mr-2 text-white group-hover:translate-x-1 transition-transform duration-300 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 5l7 7-7 7"
+                      />
+                    </svg>
+                    Cancellation Policy
+                  </a>
+                </li>
               </ul>
             </div>
 
@@ -2136,6 +2180,218 @@ export default function BhuvihHRWebsite() {
               <li>Mobile-friendly interface for job seekers</li>
               <li>Integrated ATS (Applicant Tracking System)</li>
             </ul>
+          </div>
+        }
+      />
+
+      <LegalModal
+        isOpen={activeModal === "shipping"}
+        onClose={closeModal}
+        title="Shipping & Delivery Policy"
+        content={
+          <div className="space-y-6">
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-3">
+                Scope & Applicability
+              </h3>
+              <p className="text-gray-700 leading-relaxed">
+                This Shipping & Delivery Policy governs delivery of any
+                physical materials, training kits, printed certificates, or
+                other tangible goods that Bhuvih HR Solutions Pvt Ltd may
+                supply in connection with our services, training programs,
+                or products. For digital services, course access, or
+                downloadable materials, delivery is electronic unless
+                otherwise specified.
+              </p>
+            </div>
+
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-3">
+                Delivery Times & Methods
+              </h3>
+              <ul className="list-disc list-inside space-y-2 text-gray-700 ml-4">
+                <li>
+                  Physical deliveries are dispatched within 3–7 business days
+                  from order confirmation, unless a different timeframe is
+                  specified.
+                </li>
+                <li>
+                  Delivery timelines are estimates and may vary due to
+                  courier availability, location, customs (for international
+                  shipments), or force majeure events.
+                </li>
+                <li>
+                  We use trusted third-party courier partners. Tracking
+                  information will be provided where available.
+                </li>
+                <li>
+                  For digital goods and training access, credentials or
+                  download links are sent to the registered email address
+                  within 24 hours of purchase or enrolment, unless stated
+                  otherwise.
+                </li>
+              </ul>
+            </div>
+
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-3">
+                Shipping Costs
+              </h3>
+              <p className="text-gray-700 leading-relaxed">
+                Applicable shipping charges (if any) are clearly displayed at
+                checkout. International shipments may incur customs,
+                import duties, or taxes which are the responsibility of the
+                recipient unless explicitly stated otherwise.
+              </p>
+            </div>
+
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-3">
+                Incorrect / Damaged Deliveries
+              </h3>
+              <p className="text-gray-700 leading-relaxed">
+                Inspect physical deliveries upon receipt. Report missing,
+                damaged, or incorrect items to us at <strong>bhuvihhr@zohomail.in</strong>
+                within 48 hours with photos and the courier's tracking
+                details. We will coordinate with the courier to arrange a
+                replacement, refund, or repair as appropriate.
+              </p>
+            </div>
+
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-3">
+                Lost or Delayed Shipments
+              </h3>
+              <p className="text-gray-700 leading-relaxed">
+                If a tracked shipment shows unexpected delays or is marked
+                delivered but not received, contact us within 7 days and we
+                will investigate with the carrier. For lost shipments we may
+                provide a replacement or refund depending on the
+                circumstances and available proof from the carrier.
+              </p>
+            </div>
+
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-3">
+                Liability
+              </h3>
+              <p className="text-gray-700 leading-relaxed">
+                Bhuvih HR Solutions is not liable for delays caused by
+                third-party couriers, force majeure, customs clearances, or
+                incorrect recipient information supplied at checkout. Our
+                liability for physical goods is limited to the purchase
+                price of the item(s) and any expressly agreed shipping
+                charges.
+              </p>
+            </div>
+
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-3">
+                Contact
+              </h3>
+              <p className="text-gray-700 leading-relaxed">
+                For shipping queries, please contact: <strong>bhuvihhr@zohomail.in</strong>
+                or call +91 9866875709. Include your order number and any
+                relevant tracking details to help us respond quickly.
+              </p>
+            </div>
+          </div>
+        }
+      />
+
+      <LegalModal
+        isOpen={activeModal === "cancellation"}
+        onClose={closeModal}
+        title="Cancellation & Refund Policy"
+        content={
+          <div className="space-y-6">
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-3">
+                Applicability
+              </h3>
+              <p className="text-gray-700 leading-relaxed">
+                This Cancellation & Refund Policy applies to purchases of
+                services, training program registrations, events, and any
+                bundled offerings provided by Bhuvih HR Solutions Pvt Ltd.
+                Specific course or service pages may include additional
+                cancellation terms which take precedence if stated.
+              </p>
+            </div>
+
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-3">
+                Cancellation by Customer
+              </h3>
+              <ul className="list-disc list-inside space-y-2 text-gray-700 ml-4">
+                <li>
+                  For training programs or events: cancellations requested
+                  more than 14 days before the start date are eligible for a
+                  full refund minus any non-refundable registration fees.
+                </li>
+                <li>
+                  Cancellations between 7–14 days before the start date are
+                  eligible for a 50% refund.
+                </li>
+                <li>
+                  Cancellations within 7 days of the start date are
+                  non-refundable, but registrations may be transferable or
+                  creditable toward a future session at our discretion.
+                </li>
+                <li>
+                  For bespoke services or consulting engagements, any paid
+                  retainers or deposits are subject to the terms in the
+                  client agreement and are typically non-refundable after
+                  work has commenced.
+                </li>
+              </ul>
+            </div>
+
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-3">
+                Cancellation by Bhuvih HR
+              </h3>
+              <p className="text-gray-700 leading-relaxed">
+                If we cancel a course, event, or service for any reason, we
+                will offer either a full refund, a credit toward another
+                program, or an alternative date. We are not responsible for
+                incidental costs (travel, accommodation) unless otherwise
+                agreed in writing.
+              </p>
+            </div>
+
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-3">
+                Refund Process
+              </h3>
+              <p className="text-gray-700 leading-relaxed">
+                Refunds are processed within 10–14 business days after the
+                cancellation is approved. Refunds will be issued to the same
+                payment method used for the purchase unless otherwise agreed.
+              </p>
+            </div>
+
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-3">
+                Rescheduling & Transfer
+              </h3>
+              <p className="text-gray-700 leading-relaxed">
+                Where possible, we allow rescheduling or transfer of
+                registrations to future dates subject to availability and any
+                price difference. Contact us at <strong>bhuvihhr@zohomail.in</strong>
+                to request a transfer or reschedule.
+              </p>
+            </div>
+
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-3">
+                How to Request
+              </h3>
+              <p className="text-gray-700 leading-relaxed">
+                To request a cancellation or refund, email <strong>bhuvihhr@zohomail.in</strong>
+                with your order/registration number and reason. Include any
+                supporting documents where relevant.
+              </p>
+            </div>
           </div>
         }
       />
